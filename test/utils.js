@@ -61,3 +61,7 @@ export const getTestContact = async () => {
     },
   });
 };
+
+export const removeTestAddress = async () => {
+  await prisma.address.deleteMany();
+};

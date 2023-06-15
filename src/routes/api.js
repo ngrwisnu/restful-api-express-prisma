@@ -2,6 +2,7 @@ import express from "express";
 import userController from "../controllers/user-controller.js";
 import { authMiddleware } from "../middleware/auth.js";
 import contactController from "../controllers/contact-controller.js";
+import addressController from "../controllers/address-controller.js";
 
 const router = new express.Router();
 
@@ -30,5 +31,12 @@ router.delete(
   contactController.removeContact
 );
 router.get("/api/contacts", authMiddleware, contactController.searchContact);
+
+// Address API
+router.post(
+  "/api/contacts/:contactId/addresses",
+  authMiddleware,
+  addressController.createAddress
+);
 
 export default { router };
