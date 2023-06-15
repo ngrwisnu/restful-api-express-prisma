@@ -7,5 +7,6 @@ const router = new express.Router();
 router.post("/api/users", userController.register);
 router.post("/api/users/login", userController.login);
 router.get("/api/users/current", authMiddleware, userController.getUser);
+router.patch("/api/users/current", authMiddleware, userController.updateUser);
 
 export default { router };

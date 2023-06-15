@@ -15,3 +15,11 @@ export const createTestUser = async () => {
     },
   });
 };
+
+export const getTestUser = async () => {
+  return prisma.user.findUnique({
+    where: {
+      username: "test",
+    },
+  });
+};
