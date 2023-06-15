@@ -14,5 +14,10 @@ router.delete("/api/users/logout", authMiddleware, userController.logoutUser);
 
 // Contact API
 router.post("/api/contacts", authMiddleware, contactController.createContact);
+router.get(
+  "/api/contacts/:contactId",
+  authMiddleware,
+  contactController.getContact
+);
 
 export default { router };

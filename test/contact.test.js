@@ -1,6 +1,12 @@
 import supertest from "supertest";
-import { createTestUser, removeTestUser } from "./utils.js";
-import app from "../src/app/web.js";
+import {
+  createTestContact,
+  createTestUser,
+  getTestContact,
+  removeTestContact,
+  removeTestUser,
+} from "./utils.js";
+import { app } from "../src/app/web.js";
 
 describe("POST /api/contacts", () => {
   beforeEach(async () => {
@@ -8,6 +14,7 @@ describe("POST /api/contacts", () => {
   });
 
   afterEach(async () => {
+    await removeTestContact();
     await removeTestUser();
   });
 
@@ -28,5 +35,42 @@ describe("POST /api/contacts", () => {
     expect(result.body.data.last_name).toBe("test");
     expect(result.body.data.email).toBe("test@email.com");
     expect(result.body.data.phone).toBe("12090000");
+  });
+});
+
+describe("GET /api/contacts/:contactId", () => {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+  });
+
+  afterEach(async () => {
+    await removeTestContact();
+    await removeTestUser();
+  });
+
+  it("should get user's contacts", async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(app)
+      .get("/api/contacts/" + contact.id)
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.id).toBe(contact.id);
+    expect(result.body.data.first_name).toBe(contact.first_name);
+    expect(result.body.data.last_name).toBe(contact.last_name);
+    expect(result.body.data.email).toBe(contact.email);
+    expect(result.body.data.phone).toBe(contact.phone);
+  });
+
+  it("should return 404 when contactId is invalid", async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(app)
+      .get("/api/contacts/" + (contact.id + 1))
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(404);
   });
 });
