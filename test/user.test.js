@@ -183,3 +183,26 @@ describe("PATCH /api/users/current", () => {
     );
   });
 });
+
+describe("DELETE /api/users/logout", () => {
+  beforeEach(async () => {
+    await createTestUser();
+  });
+
+  afterEach(async () => {
+    await removeTestUser();
+  });
+
+  it("should delete user's token in the database", async () => {
+    const result = await supertest(app)
+      .delete("/api/users/logout")
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data).toBe("Ok");
+
+    const user = await getTestUser();
+
+    expect(user.token).toBe(null);
+  });
+});
