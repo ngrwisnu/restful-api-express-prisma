@@ -19,5 +19,10 @@ router.get(
   authMiddleware,
   contactController.getContact
 );
+router.put(
+  "/api/contacts/:contactId",
+  authMiddleware,
+  contactController.updateContact
+);
 
 export default { router };
