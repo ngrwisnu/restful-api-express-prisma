@@ -47,4 +47,19 @@ const updateContact = async (req, res, next) => {
   }
 };
 
-export default { createContact, getContact, updateContact };
+const removeContact = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const contactId = req.params.contactId;
+
+    const result = await contactService.removeContact(user, contactId);
+
+    res.status(200).json({
+      data: "Ok",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { createContact, getContact, updateContact, removeContact };

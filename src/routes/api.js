@@ -24,5 +24,10 @@ router.put(
   authMiddleware,
   contactController.updateContact
 );
+router.delete(
+  "/api/contacts/:contactId",
+  authMiddleware,
+  contactController.removeContact
+);
 
 export default { router };
