@@ -29,5 +29,6 @@ router.delete(
   authMiddleware,
   contactController.removeContact
 );
+router.get("/api/contacts", authMiddleware, contactController.searchContact);
 
 export default { router };

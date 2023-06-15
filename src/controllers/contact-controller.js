@@ -62,4 +62,34 @@ const removeContact = async (req, res, next) => {
   }
 };
 
-export default { createContact, getContact, updateContact, removeContact };
+const searchContact = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const request = {
+      name: req.query.name,
+      email: req.query.email,
+      phone: req.query.phone,
+      page: req.query.page,
+      size: req.query.size,
+    };
+
+    const result = await contactService.searchContact(user, request);
+
+    res.status(200).json({
+      data: {
+        result: result.data,
+        paging: result.paging,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  createContact,
+  getContact,
+  updateContact,
+  removeContact,
+  searchContact,
+};

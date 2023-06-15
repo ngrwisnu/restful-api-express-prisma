@@ -1,5 +1,6 @@
 import supertest from "supertest";
 import {
+  createManyTestContact,
   createTestContact,
   createTestUser,
   getTestContact,
@@ -195,5 +196,90 @@ describe("DELETE /api/contact/:contactId", () => {
 
     expect(result.status).toBe(404);
     expect(result.body.error).toBeDefined();
+  });
+});
+
+describe("GET /api/contacts", () => {
+  beforeEach(async () => {
+    await createTestUser();
+    await createManyTestContact();
+  });
+
+  afterEach(async () => {
+    await removeTestContact();
+    await removeTestUser();
+  });
+
+  it("should be able to search without params", async () => {
+    const result = await supertest(app)
+      .get("/api/contacts")
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.result.length).toBe(10);
+    expect(result.body.data.paging.page).toBe(1);
+    expect(result.body.data.paging.total_page).toBe(2);
+    expect(result.body.data.paging.total_items).toBe(12);
+  });
+
+  it("should be able to search to page 2", async () => {
+    const result = await supertest(app)
+      .get("/api/contacts")
+      .query({
+        page: 2,
+      })
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.result.length).toBe(2);
+    expect(result.body.data.paging.page).toBe(2);
+    expect(result.body.data.paging.total_page).toBe(2);
+    expect(result.body.data.paging.total_items).toBe(12);
+  });
+
+  it("should be able to search specific contact with phone", async () => {
+    const result = await supertest(app)
+      .get("/api/contacts")
+      .query({
+        name: "test",
+        phone: "12090005",
+      })
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.result.length).toBe(1);
+    expect(result.body.data.paging.page).toBe(1);
+    expect(result.body.data.paging.total_page).toBe(1);
+    expect(result.body.data.paging.total_items).toBe(1);
+  });
+
+  it("should be able to search couple of contacts based on name", async () => {
+    const result = await supertest(app)
+      .get("/api/contacts")
+      .query({
+        name: "test 1",
+      })
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.result.length).toBe(3);
+    expect(result.body.data.paging.page).toBe(1);
+    expect(result.body.data.paging.total_page).toBe(1);
+    expect(result.body.data.paging.total_items).toBe(3);
+  });
+
+  it("should be able to return no contact when the search value doesn't match with the data", async () => {
+    const result = await supertest(app)
+      .get("/api/contacts")
+      .query({
+        name: "test 18",
+      })
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.result.length).toBe(0);
+    expect(result.body.data.paging.page).toBe(1);
+    expect(result.body.data.paging.total_page).toBe(1);
+    expect(result.body.data.paging.total_items).toBe(0);
   });
 });
