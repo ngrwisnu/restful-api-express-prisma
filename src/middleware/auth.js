@@ -3,8 +3,6 @@ import { prisma } from "../app/database.js";
 export const authMiddleware = async (req, res, next) => {
   const token = req.get("Authorization");
 
-  console.log(token);
-
   if (!token) {
     res
       .status(401)
