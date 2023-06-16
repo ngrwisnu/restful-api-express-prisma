@@ -53,5 +53,10 @@ router.delete(
   authMiddleware,
   addressController.removeAddress
 );
+router.get(
+  "/api/contacts/:contactId/addresses",
+  authMiddleware,
+  addressController.listAddress
+);
 
 export default { router };

@@ -126,9 +126,20 @@ const removeAddress = async (user, contactId, addressId) => {
   });
 };
 
+const listAddress = async (user, contactId) => {
+  contactId = await checkIsContactExist(user, contactId);
+
+  return prisma.address.findMany({
+    where: {
+      contact_id: contactId,
+    },
+  });
+};
+
 export default {
   createAddress,
   getAddress,
   updateAddress,
   removeAddress,
+  listAddress,
 };

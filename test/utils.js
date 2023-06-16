@@ -90,3 +90,20 @@ export const getTestAddress = async () => {
     },
   });
 };
+
+export const createManyTestAddress = async () => {
+  const contact = await getTestContact();
+
+  for (let i = 0; i < 5; i++) {
+    await prisma.address.create({
+      data: {
+        street: `Street ${i}`,
+        city: `City ${i}`,
+        province: `Province ${i}`,
+        country: "Indonesia",
+        postal_code: "12111",
+        contact_id: contact.id,
+      },
+    });
+  }
+};

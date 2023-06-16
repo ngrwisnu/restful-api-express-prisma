@@ -67,9 +67,25 @@ const removeAddress = async (req, res, next) => {
   }
 };
 
+const listAddress = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const contactId = req.params.contactId;
+
+    const result = await addressService.listAddress(user, contactId);
+
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createAddress,
   getAddress,
   updateAddress,
   removeAddress,
+  listAddress,
 };

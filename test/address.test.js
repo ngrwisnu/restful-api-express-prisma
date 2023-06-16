@@ -1,5 +1,6 @@
 import supertest from "supertest";
 import {
+  createManyTestAddress,
   createTestAddress,
   createTestContact,
   createTestUser,
@@ -269,6 +270,43 @@ describe("DELETE /api/contacts/:contactId/addresses/:addressId, remove address",
       .set("Authorization", "test");
 
     logger.info(result.body);
+
+    expect(result.status).toBe(404);
+    expect(result.body.error).toBeDefined();
+  });
+});
+
+describe("GET /api/contacts/:contactId/addresses, list of contact's addresses", () => {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+    // await createTestAddress();
+    await createManyTestAddress();
+  });
+
+  afterEach(async () => {
+    await removeTestAddress();
+    await removeTestContact();
+    await removeTestUser();
+  });
+
+  it("should return list of the addresses", async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(app)
+      .get(`/api/contacts/${contact.id}/addresses`)
+      .set("Authorization", "test");
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.length).toBe(5);
+  });
+
+  it("should fail if contact isn't found", async () => {
+    const contact = await getTestContact();
+
+    const result = await supertest(app)
+      .get(`/api/contacts/${contact.id + 1}/addresses`)
+      .set("Authorization", "test");
 
     expect(result.status).toBe(404);
     expect(result.body.error).toBeDefined();
