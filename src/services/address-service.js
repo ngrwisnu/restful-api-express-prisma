@@ -8,7 +8,7 @@ import {
   updateAddressValidation,
 } from "../validation/address-validation.js";
 
-const createAddress = async (user, contactId, request) => {
+const checkIsContactExist = async (user, contactId) => {
   contactId = validate(getContactValidation, contactId);
 
   const totalContactInDatabase = await prisma.contact.count({
@@ -20,6 +20,12 @@ const createAddress = async (user, contactId, request) => {
 
   if (totalContactInDatabase !== 1)
     throw new ErrorResponse(404, "Contact is not found!");
+
+  return contactId;
+};
+
+const createAddress = async (user, contactId, request) => {
+  contactId = await checkIsContactExist(user, contactId);
 
   const address = validate(createAddressValidation, request);
   address.contact_id = contactId;
@@ -38,17 +44,7 @@ const createAddress = async (user, contactId, request) => {
 };
 
 const getAddress = async (user, contactId, addressId) => {
-  contactId = validate(getContactValidation, contactId);
-
-  const totalContactInDatabase = await prisma.contact.count({
-    where: {
-      id: contactId,
-      username: user.username,
-    },
-  });
-
-  if (totalContactInDatabase !== 1)
-    throw new ErrorResponse(404, "Contact is not found!");
+  contactId = await checkIsContactExist(user, contactId);
 
   addressId = validate(getAddressValidation, addressId);
 
@@ -73,16 +69,7 @@ const getAddress = async (user, contactId, addressId) => {
 };
 
 const updateAddress = async (user, contactId, request) => {
-  contactId = validate(getContactValidation, contactId);
-  const totalContactInDatabase = await prisma.contact.count({
-    where: {
-      id: contactId,
-      username: user.username,
-    },
-  });
-
-  if (totalContactInDatabase !== 1)
-    throw new ErrorResponse(404, "Contact is not found!");
+  contactId = await checkIsContactExist(user, contactId);
 
   const address = validate(updateAddressValidation, request);
 
