@@ -16,6 +16,22 @@ const createAddress = async (req, res, next) => {
   }
 };
 
+const getAddress = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const { contactId, addressId } = req.params;
+
+    const result = await addressService.getAddress(user, contactId, addressId);
+
+    res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createAddress,
+  getAddress,
 };

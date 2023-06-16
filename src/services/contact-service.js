@@ -27,9 +27,6 @@ const createContact = async (user, request) => {
 const getContact = async (user, contactId) => {
   contactId = validate(getContactValidation, contactId);
 
-  console.log("user: ", user.username);
-  console.log("id: ", contactId);
-
   const contact = await prisma.contact.findFirst({
     where: {
       username: user.username,

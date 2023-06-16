@@ -38,5 +38,10 @@ router.post(
   authMiddleware,
   addressController.createAddress
 );
+router.get(
+  "/api/contacts/:contactId/addresses/:addressId",
+  authMiddleware,
+  addressController.getAddress
+);
 
 export default { router };
