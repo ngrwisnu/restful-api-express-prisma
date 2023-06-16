@@ -138,3 +138,79 @@ describe("GET /api/contacts/:contactId/addresses/:addressId, get address", () =>
     expect(result.body.error).toBeDefined();
   });
 });
+
+describe("PUT /api/contacts/:contactId/addresses/:addressId, update address", () => {
+  beforeEach(async () => {
+    await createTestUser();
+    await createTestContact();
+    await createTestAddress();
+  });
+
+  afterEach(async () => {
+    await removeTestAddress();
+    await removeTestContact();
+    await removeTestUser();
+  });
+
+  it("should be able to update the address", async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddress();
+
+    const result = await supertest(app)
+      .put(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set("Authorization", "test")
+      .send({
+        city: "Test City",
+        province: "Test Province",
+        postal_code: "00999",
+      });
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(200);
+    expect(result.body.data.id).toBe(address.id);
+    expect(result.body.data.street).toBe("Anggrek St.");
+    expect(result.body.data.city).toBe("Test City");
+    expect(result.body.data.province).toBe("Test Province");
+    expect(result.body.data.country).toBe("Indonesia");
+    expect(result.body.data.postal_code).toBe("00999");
+  });
+
+  it("should return 404 if contact isn't found", async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddress();
+
+    const result = await supertest(app)
+      .put(`/api/contacts/${contact.id + 1}/addresses/${address.id}`)
+      .set("Authorization", "test")
+      .send({
+        city: "Test City",
+        province: "Test Province",
+        postal_code: "00999",
+      });
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+    expect(result.body.error).toBeDefined();
+  });
+
+  it("should return 404 if address isn't found", async () => {
+    const contact = await getTestContact();
+    const address = await getTestAddress();
+
+    const result = await supertest(app)
+      .put(`/api/contacts/${contact.id}/addresses/${address.id + 1}`)
+      .set("Authorization", "test")
+      .send({
+        city: "Test City",
+        province: "Test Province",
+        postal_code: "00999",
+      });
+
+    logger.info(result.body);
+
+    expect(result.status).toBe(404);
+    expect(result.body.error).toBeDefined();
+  });
+});
