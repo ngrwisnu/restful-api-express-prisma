@@ -8,6 +8,20 @@ import {
 } from "../validation/contact-validation.js";
 import validate from "../validation/validation.js";
 
+const isContactExistInDatabase = async (user, contactId) => {
+  const totalContactInDatabase = await prisma.contact.count({
+    where: {
+      username: user.username,
+      id: contactId,
+    },
+  });
+
+  if (totalContactInDatabase !== 1)
+    throw new ErrorResponse(404, "Contact is not found!");
+
+  return totalContactInDatabase;
+};
+
 const createContact = async (user, request) => {
   const contact = validate(createContactValidation, request);
   contact.username = user.username;
@@ -49,15 +63,7 @@ const getContact = async (user, contactId) => {
 const updateContact = async (user, request) => {
   const contact = validate(updateContactValidation, request);
 
-  const totalContactInDatabase = await prisma.contact.count({
-    where: {
-      username: user.username,
-      id: contact.id,
-    },
-  });
-
-  if (totalContactInDatabase !== 1)
-    throw new ErrorResponse(404, "Contact is not found!");
+  await isContactExistInDatabase(user, contact.id);
 
   return prisma.contact.update({
     where: {
@@ -82,15 +88,7 @@ const updateContact = async (user, request) => {
 const removeContact = async (user, contactId) => {
   contactId = validate(getContactValidation, contactId);
 
-  const totalInDatabase = await prisma.contact.count({
-    where: {
-      username: user.username,
-      id: contactId,
-    },
-  });
-
-  if (totalInDatabase !== 1)
-    throw new ErrorResponse(404, "Contact is not found!");
+  await isContactExistInDatabase(user, contactId);
 
   return prisma.contact.delete({
     where: {
