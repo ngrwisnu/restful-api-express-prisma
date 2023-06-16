@@ -1,3 +1,33 @@
-node_modules
+# Node.js
+node_modules/
 
+# Prisma
+# Exclude generated Prisma client code
+/prisma/client/
+
+# Jest
+# Exclude test result caches
+**/coverage/
+**/.nyc_output/
+
+# Babel
+# Exclude transpiled files
+/dist/
+
+# IDE/Editor specific files (optional)
+.vscode/
+.idea/
+*.iml
+
+# Logs
+logs/
+*.log
+
+# Environment variables (if applicable)
 .env
+.env.local
+.env.*.local
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
